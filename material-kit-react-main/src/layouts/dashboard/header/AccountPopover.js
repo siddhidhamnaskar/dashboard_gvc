@@ -33,7 +33,7 @@ export default function AccountPopover() {
   };
 
   const handleClose = () => {
-    localStorage.removeItem("token");
+    sessionStorage.getItem('token')
     Navigate("/login")
   };
 

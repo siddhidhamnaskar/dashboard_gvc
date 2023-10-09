@@ -1,6 +1,10 @@
+// import React from 'react';
+
 import { Helmet } from 'react-helmet-async';
 import { faker } from '@faker-js/faker';
 import { useEffect, useState } from 'react';
+import $ from 'jquery';
+import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -27,37 +31,75 @@ import {
 
 export default function DashboardAppPage() {
   const [data,setData]=useState({data:[],dataAll:[]});
+  const [machine,setMachines]=useState()
+  const [online,setOnline]=useState();
+  const [ofline,setOfline]=useState();
   const theme = useTheme();
  
 
   const navigate=useNavigate();
-  // const filterOnline = q => moment().diff(moment.utc((q.lastHeartbeatTime || q.lastOnTime).replace('Z', '')), 'minute') < 5;
-   useEffect(()=>{
-  
-  
+  const filterOnline = q => moment().diff(moment.utc((q.lastHeartbeatTime || q.lastOnTime).replace('Z', '')), 'minute') < 5;
+  const filterStock = q => moment().diff(moment.utc((q.lastHeartbeatTime || q.lastOnTime).replace('Z', '')), 'minute') < 5;
 
-    const token =JSON.parse(localStorage.getItem("token"));
- 
-    if(!token)
-  {
-    navigate('/login')
-  }
+  const amountText = amt => {
+    amt = amt || 0;
+    console.log(amt);
+    const cr = (amt / 100000) / 100;
+    const l = (amt / 1000) / 100;
+    const k = (amt / 10) / 100;
+    const result = cr < 1 ?
+    (l < 1 ? `${k}K` : `${l}L`) :
+    `${cr}Cr`;
     
-    fetch('http://165.232.177.23:8080/api/machine/data?status=Online,Offine',{
-      headers:{
-        'x-token':token
-      }
-    })
-    .then((res)=>{
-      return res.json();
+      return result;
+    
+   
+};
+const sum = (a, b) => a + b;
+   const LoadData=()=>{
+    const apiUrl = 'http://165.232.177.23:8080/api/machine/data?status=Online,Offine & city=Mumbai'; // Replace with your API URL
+    const url = `${apiUrl}/me`;
 
-    })
-    .then((json)=>{
-      console.log(json);
-      setData(json.data);
-    })
+    // Set up the headers
+    $.ajaxSetup({
+      headers: {
+        'x-token':sessionStorage.getItem('token'),
+      },
+    });
 
-  },[])
+    // Make the AJAX request
+    $.ajax({
+      url,
+      type: 'GET',
+      success: (json) => {
+       
+        setData(json.data);
+            setMachines(json.data.dataAll.length)
+            setOnline(json.data.data.filter(filterOnline).length);
+            setOfline(json.data.data.length-json.data.data.filter(filterOnline).length)
+        
+      },
+      error: (_) => {
+        // Handle an error here (e.g., redirect to the login page)
+        window.location = '/login';
+      },
+    });
+
+   }
+  
+    useEffect(() => {
+      // Construct the URL
+
+      setInterval(()=>{
+        LoadData();
+      },5000)
+   
+ 
+    
+    }, []); // Empty dependency array ensures this effect runs only once on component mount
+  
+   
+  
 
   return (
     <>
@@ -66,25 +108,25 @@ export default function DashboardAppPage() {
       </Helmet>
 
       <Container maxWidth="xl">
-        <Typography variant="h4" sx={{ mb: 5 }}>
+        {/* <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back
-        </Typography>
+        </Typography> */}
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Machines Installed" total={data.dataAll.length} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary title="Machines Installed" total={machine} icon={'ant-design:android-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Machines Running" total={2747283} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Machines Running" total={online} color="info" icon={'icon-park-outline:gate-machine'} />
+          </Grid>
+        
+          <Grid item xs={12} sm={6} md={3}>
+           <AppWidgetSummary title="Total Collection" total={` &nbsp;${data.data.length ? amountText(data.data.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)) : 0}`} color="warning" icon={'ant-design:windows-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Total Collection" total={1723315} color="warning" icon={'ant-design:windows-filled'} />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Items Dispends" total={234} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Items Dispends" total={data.dataAll.length ? amountText(data.dataAll.map(q => (q.qtyCurrent +  q.qtyLife)).reduce(sum)) : 0} color="error" icon={'ant-design:bug-filled'} />
           </Grid>
 
           {/* <Grid item xs={12} md={6} lg={8}>
@@ -127,12 +169,14 @@ export default function DashboardAppPage() {
             />
           </Grid> */}
 
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={22} md={6} lg={6} fontSize={12}>
             <AppCurrentVisits
+            fontSize="20px"
               title="Machines Status"
               chartData={[
-                { label: 'Online', value: 4344 },
-                { label: 'Offline', value: 5435 },
+             
+                { label: 'Online', value:online},
+                { label: 'Offline', value:machine-online},
                 // { label: 'Europe', value: 1443 },
                 // { label: 'Africa', value: 4443 },
               ]}
@@ -144,7 +188,26 @@ export default function DashboardAppPage() {
               ]}
             />
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12} md={6} lg={6}>
+            <AppCurrentVisits
+              title="Stock Status"
+              chartData={[
+                { label: 'ok', value:data.data.filter(filterOnline).filter(m => m.spiral_a_status === 3).length },
+                { label: 'Low', value:data.data.filter(filterOnline).filter(m => m.spiral_a_status === 1).length },
+                { label: 'Empty', value:data.data.filter(filterOnline).filter(m => m.spiral_a_status === 0).length},
+                { label: 'Unknown', value: data.data.filter(filterOnline).filter(m => m.spiral_a_status === 2).length },
+              ]}
+              chartColors={[
+                theme.palette.success.main,
+                theme.palette.warning.main,
+                theme.palette.error.main,
+                theme.palette.background.default,
+               
+                
+              ]}
+            />
+          </Grid>
+          {/* <Grid item xs={12} md={6} lg={6}>
             <AppCurrentVisits
               title="Stock Status"
               chartData={[
@@ -163,8 +226,27 @@ export default function DashboardAppPage() {
               ]}
             />
           </Grid>
+           <Grid item xs={12} md={6} lg={6}>
+            <AppCurrentVisits
+              title="Stock Status"
+              chartData={[
+                { label: 'ok', value: 4344 },
+                { label: 'Low', value: 5435 },
+                { label: 'Empty', value: 1443 },
+                { label: 'Unknown', value: 4443 },
+              ]}
+              chartColors={[
+                theme.palette.success.main,
+                theme.palette.warning.main,
+                theme.palette.error.main,
+                theme.palette.background.default,
+               
+                
+              ]}
+            />
+          </Grid> */}
 
-          <Grid item xs={12} md={6} lg={8}>
+          {/* <Grid item xs={12} md={6} lg={8}>
             <AppConversionRates
               title="Conversion Rates"
               subheader="(+43%) than last year"
@@ -266,7 +348,7 @@ export default function DashboardAppPage() {
                 { id: '5', label: 'Sprint Showcase' },
               ]}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </>

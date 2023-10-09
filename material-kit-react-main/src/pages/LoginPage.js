@@ -51,8 +51,8 @@ export default function SignIn() {
        return res.json();
     })
     .then((json)=>{
-      
-      localStorage.setItem("token",JSON.stringify(json.data.token));
+      window.sessionStorage.setItem('token', json.data.token);
+      // localStorage.setItem("token",JSON.stringify(json.data.token));
       navigate('/dashboard/app')
     })
 
@@ -69,10 +69,14 @@ export default function SignIn() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 12,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            backgroundColor:"#fff",
+            padding:'20px',
+            boxShadow:'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px'
+            
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -102,10 +106,10 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth
@@ -114,7 +118,7 @@ export default function SignIn() {
             >
               Sign In
             </Button>
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
@@ -125,7 +129,7 @@ export default function SignIn() {
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
-            </Grid>
+            </Grid> */}
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
