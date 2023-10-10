@@ -34,6 +34,7 @@ export default function DashboardAppPage() {
   const [machine,setMachines]=useState()
   const [online,setOnline]=useState();
   const [ofline,setOfline]=useState();
+  const [cash,setCash]=useState();
   const theme = useTheme();
  
 
@@ -77,7 +78,9 @@ const sum = (a, b) => a + b;
         setData(json.data);
             setMachines(json.data.dataAll.length)
             setOnline(json.data.data.filter(filterOnline).length);
-            setOfline(json.data.data.length-json.data.data.filter(filterOnline).length)
+            setOfline(json.data.data.length-json.data.data.filter(filterOnline).length);
+            setCash(json.data.dataAll.length ?amountText(json.data.dataAll.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)):0);
+          
         
       },
       error: (_) => {
@@ -98,7 +101,72 @@ const sum = (a, b) => a + b;
  
     
     }, []); // Empty dependency array ensures this effect runs only once on component mount
+
+
+    const PostData=()=>{
+
+      const apiUrl = 'http://165.232.177.23:8080/api/machine/data?status=Online,Offine & city=Mumbai'; // Replace with your API URL
+      const url = `${apiUrl}/me`;
   
+      // Set up the headers
+      $.ajaxSetup({
+        headers: {
+          'x-token':sessionStorage.getItem('token'),
+        },
+      });
+  
+      // Make the AJAX request
+      $.ajax({
+        url,
+        type: 'GET',
+        success: (json) => {
+         
+          setData(json.data);
+              setMachines(json.data.dataAll.length)
+              setOnline(json.data.data.filter(filterOnline).length);
+              setOfline(json.data.data.length-json.data.data.filter(filterOnline).length);
+              setCash(json.data.dataAll.length ?amountText(json.data.dataAll.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)):0);
+              const Data={
+                running:json.data.data.filter(filterOnline).length,
+                cash:json.data.dataAll.length ?amountText(json.data.dataAll.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)):0,
+                 vended:json.data.dataAll.length ?(json.data.dataAll.map(q => (q.qtyCurrent +  q.qtyLife)).reduce(sum)):0
+               
+        
+              }
+              console.log(Data);
+              fetch('http://localhost:8000/api',{
+      
+              method:"POST",
+              headers:{
+                'Content-type':'application/json'
+              },
+              body:JSON.stringify(Data)
+      
+            })
+            
+          
+        },
+        error: (_) => {
+          // Handle an error here (e.g., redirect to the login page)
+          window.location = '/login';
+        },
+      });
+
+      
+
+   
+
+    }
+  
+
+    useEffect(()=>{
+      // PostData();
+
+        setInterval(()=>{
+           PostData();
+        },60000)
+
+    },[])
    
   
 
