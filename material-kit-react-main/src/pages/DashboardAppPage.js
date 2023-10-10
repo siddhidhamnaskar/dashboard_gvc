@@ -43,14 +43,15 @@ export default function DashboardAppPage() {
 
   const amountText = amt => {
     amt = amt || 0;
-    console.log(amt);
+    // console.log(amt);
     const cr = (amt / 100000) / 100;
     const l = (amt / 1000) / 100;
     const k = (amt / 10) / 100;
     const result = cr < 1 ?
     (l < 1 ? `${k}K` : `${l}L`) :
     `${cr}Cr`;
-    
+      
+    console.log(result);
       return result;
     
    
@@ -89,10 +90,10 @@ const sum = (a, b) => a + b;
   
     useEffect(() => {
       // Construct the URL
-
+      LoadData();
       setInterval(()=>{
         LoadData();
-      },5000)
+      },2000)
    
  
     
@@ -118,15 +119,16 @@ const sum = (a, b) => a + b;
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Machines Running" total={online} color="info" icon={'icon-park-outline:gate-machine'} />
+          
+            <AppWidgetSummary type={String} title="Machines Running" total={online} color="info" icon={'icon-park-outline:gate-machine'} />
           </Grid>
         
           <Grid item xs={12} sm={6} md={3}>
-           <AppWidgetSummary title="Total Collection" total={` &nbsp;${data.data.length ? amountText(data.data.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)) : 0}`} color="warning" icon={'ant-design:windows-filled'} />
+           <AppWidgetSummary title="Total Collection" total={data.dataAll.length ?amountText(data.dataAll.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)).toString():0} color="warning" icon={'ant-design:windows-filled'} />
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Items Dispends" total={data.dataAll.length ? amountText(data.dataAll.map(q => (q.qtyCurrent +  q.qtyLife)).reduce(sum)) : 0} color="error" icon={'ant-design:bug-filled'} />
+            <AppWidgetSummary title="Items Dispends" total={data.dataAll.length ?amountText(data.dataAll.map(q => (q.qtyCurrent +  q.qtyLife)).reduce(sum)).toString():0} color="error" icon={'ant-design:bug-filled'} />
           </Grid>
 
           {/* <Grid item xs={12} md={6} lg={8}>
@@ -169,9 +171,11 @@ const sum = (a, b) => a + b;
             />
           </Grid> */}
 
-          <Grid item xs={22} md={6} lg={6} fontSize={12}>
+          <Grid item xs={22} md={6} lg={6} text={20}>
             <AppCurrentVisits
-            fontSize="20px"
+              sx={{
+                fontSize:'20px'
+              }}
               title="Machines Status"
               chartData={[
              
@@ -181,16 +185,17 @@ const sum = (a, b) => a + b;
                 // { label: 'Africa', value: 4443 },
               ]}
               chartColors={[
-                theme.palette.success.main,
+                theme.palette.success.dark,
                 // theme.palette.info.main,
                 // theme.palette.warning.main,
-                theme.palette.error.main,
+                theme.palette.error.dark,
               ]}
             />
           </Grid>
           <Grid item xs={12} md={6} lg={6}>
             <AppCurrentVisits
               title="Stock Status"
+              type="donut"
               chartData={[
                 { label: 'ok', value:data.data.filter(filterOnline).filter(m => m.spiral_a_status === 3).length },
                 { label: 'Low', value:data.data.filter(filterOnline).filter(m => m.spiral_a_status === 1).length },
@@ -198,9 +203,9 @@ const sum = (a, b) => a + b;
                 { label: 'Unknown', value: data.data.filter(filterOnline).filter(m => m.spiral_a_status === 2).length },
               ]}
               chartColors={[
-                theme.palette.success.main,
-                theme.palette.warning.main,
-                theme.palette.error.main,
+                theme.palette.success.dark,
+                theme.palette.warning.dark,
+                theme.palette.error.dark,
                 theme.palette.background.default,
                
                 

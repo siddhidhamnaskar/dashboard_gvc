@@ -51,6 +51,7 @@ export default function SignIn() {
        return res.json();
     })
     .then((json)=>{
+      localStorage.setItem('name',json.data.user.name);
       window.sessionStorage.setItem('token', json.data.token);
       // localStorage.setItem("token",JSON.stringify(json.data.token));
       navigate('/dashboard/app')

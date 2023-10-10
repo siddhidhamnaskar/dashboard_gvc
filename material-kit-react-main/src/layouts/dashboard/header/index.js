@@ -1,16 +1,19 @@
 import PropTypes from 'prop-types';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
+import { Box, Stack, AppBar, Toolbar, IconButton,Typography } from '@mui/material';
 // utils
 import { bgBlur } from '../../../utils/cssStyles';
 // components
-import Iconify from '../../../components/iconify';
+
+
 //
 import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
+import account from '../../../_mock/account';
 import LanguagePopover from './LanguagePopover';
 import NotificationsPopover from './NotificationsPopover';
+import Iconify from '../../../components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -57,7 +60,7 @@ export default function Header({ onOpenNav }) {
           <Iconify icon="eva:menu-2-fill" />
         </IconButton>
 
-        <Searchbar />
+        {/* <Searchbar /> */}
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack
@@ -68,9 +71,12 @@ export default function Header({ onOpenNav }) {
             sm: 1,
           }}
         >
-          <LanguagePopover />
-          <NotificationsPopover />
-          <AccountPopover />
+          {/* <LanguagePopover /> */}
+          {/* <NotificationsPopover /> */}
+          <AccountPopover />    <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
+                {account.displayName}
+              </Typography>
+
         </Stack>
       </StyledToolbar>
     </StyledRoot>
