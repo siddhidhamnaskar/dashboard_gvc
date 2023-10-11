@@ -52,7 +52,7 @@ export default function DashboardAppPage() {
     (l < 1 ? `${k}K` : `${l}L`) :
     `${cr}Cr`;
       
-    console.log(result);
+    // console.log(result);
       return result;
     
    
@@ -128,13 +128,13 @@ const sum = (a, b) => a + b;
               setCash(json.data.dataAll.length ?amountText(json.data.dataAll.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)):0);
               const Data={
                 running:json.data.data.filter(filterOnline).length,
-                cash:json.data.dataAll.length ?amountText(json.data.dataAll.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)):0,
+                cash:json.data.dataAll.length ?(json.data.dataAll.map(q => (q.cashCurrent + q.cashLife)).reduce(sum)):0,
                  vended:json.data.dataAll.length ?(json.data.dataAll.map(q => (q.qtyCurrent +  q.qtyLife)).reduce(sum)):0
                
         
               }
               console.log(Data);
-              fetch('http://localhost:8000/api',{
+              fetch('http://localhost:8080/api',{
       
               method:"POST",
               headers:{
@@ -162,12 +162,15 @@ const sum = (a, b) => a + b;
     useEffect(()=>{
       // PostData();
 
-        setInterval(()=>{
-           PostData();
-        },60000)
+  //  setTimeout(()=>{
+  //   PostData()
+  //  },1000)
 
-    },[])
+  setInterval(()=>{
+    PostData();
+  },60000)
    
+},[])
   
 
   return (
