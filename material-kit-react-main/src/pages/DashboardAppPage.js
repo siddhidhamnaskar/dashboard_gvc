@@ -35,6 +35,7 @@ export default function DashboardAppPage() {
   const [online,setOnline]=useState();
   const [ofline,setOfline]=useState();
   const [cash,setCash]=useState();
+  const [minuteWiseData,setMinuteWiseData]=useState([]);
   const theme = useTheme();
  
 
@@ -133,16 +134,16 @@ const sum = (a, b) => a + b;
                
         
               }
-              console.log(Data);
-              fetch('http://localhost:8080/api',{
+              // console.log(Data);
+            //   fetch('http://localhost:8080/api',{
       
-              method:"POST",
-              headers:{
-                'Content-type':'application/json'
-              },
-              body:JSON.stringify(Data)
+            //   method:"POST",
+            //   headers:{
+            //     'Content-type':'application/json'
+            //   },
+            //   body:JSON.stringify(Data)
       
-            })
+            // })
             
           
         },
@@ -160,17 +161,26 @@ const sum = (a, b) => a + b;
   
 
     useEffect(()=>{
-      // PostData();
-
-  //  setTimeout(()=>{
-  //   PostData()
-  //  },1000)
-
+   
   setInterval(()=>{
     PostData();
   },60000)
    
 },[])
+
+
+  useEffect(()=>{
+
+    // fetch('http://localhost:8080/api')
+    // .then((res)=>{
+    //   return res.json();
+    // })
+    // .then((json)=>{
+    //   console.log(json);
+    // })
+
+
+  },[])
   
 
   return (
@@ -202,45 +212,7 @@ const sum = (a, b) => a + b;
             <AppWidgetSummary title="Items Dispends" total={data.dataAll.length ?amountText(data.dataAll.map(q => (q.qtyCurrent +  q.qtyLife)).reduce(sum)).toString():0} color="error" icon={'ant-design:bug-filled'} />
           </Grid>
 
-          {/* <Grid item xs={12} md={6} lg={8}>
-            <AppWebsiteVisits
-              title="Website Visits"
-              subheader="(+43%) than last year"
-              chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ]}
-              chartData={[
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                },
-              ]}
-            />
-          </Grid> */}
+          
 
           <Grid item xs={22} md={6} lg={6} text={20}>
             <AppCurrentVisits
@@ -280,6 +252,45 @@ const sum = (a, b) => a + b;
                 theme.palette.background.default,
                
                 
+              ]}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} lg={8}>
+            <AppWebsiteVisits
+              title="Website Visits"
+              subheader="(+43%) than last year"
+              chartLabels={[
+                '01/01/2003',
+                '02/01/2003',
+                '03/01/2003',
+                '04/01/2003',
+                '05/01/2003',
+                '06/01/2003',
+                '07/01/2003',
+                '08/01/2003',
+                '09/01/2003',
+                '10/01/2003',
+                '11/01/2003',
+              ]}
+              chartData={[
+                {
+                  name: 'Team A',
+                  type: 'column',
+                  fill: 'solid',
+                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+                },
+                {
+                  name: 'Team B',
+                  type: 'area',
+                  fill: 'gradient',
+                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
+                },
+                {
+                  name: 'Team C',
+                  type: 'line',
+                  fill: 'solid',
+                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
+                },
               ]}
             />
           </Grid>
