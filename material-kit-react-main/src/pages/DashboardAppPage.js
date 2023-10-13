@@ -3,6 +3,7 @@
 import { Helmet } from 'react-helmet-async';
 import { faker } from '@faker-js/faker';
 import { useEffect, useState } from 'react';
+import { Line } from 'react-chartjs-2';
 import $ from 'jquery';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +30,36 @@ import {
 
 // ----------------------------------------------------------------------
 
+if ("Notification" in window) {
+  console.log("browser supports notifications")
+
+  // The browser supports the Notification API
+} else {
+  console.log("This browser does not support system notifications.");
+}
+
+
+if (Notification.permission !== "granted") {
+  Notification.requestPermission().then((permission) => {
+    if (permission === "granted") {
+      console.log("Permission Granted");
+    } else {
+      console.log("Permission denied for notifications");
+    }
+  });
+}
+else if(Notification.permission==="granted"){
+  const notification = new Notification("Hello, World!", {
+    body: "This is a notification from your React app.",
+  });
+
+  // notification.onclick = () => {
+  //   // Handle notification click event (e.g., open a link, focus the app, etc.)
+  // };
+}
+
+
+
 export default function DashboardAppPage() {
   const [data,setData]=useState({data:[],dataAll:[]});
   const [machine,setMachines]=useState()
@@ -37,11 +68,15 @@ export default function DashboardAppPage() {
   const [cash,setCash]=useState();
   const [minuteWiseData,setMinuteWiseData]=useState([]);
   const theme = useTheme();
+
+
  
 
   const navigate=useNavigate();
   const filterOnline = q => moment().diff(moment.utc((q.lastHeartbeatTime || q.lastOnTime).replace('Z', '')), 'minute') < 5;
   const filterStock = q => moment().diff(moment.utc((q.lastHeartbeatTime || q.lastOnTime).replace('Z', '')), 'minute') < 5;
+
+
 
   const amountText = amt => {
     amt = amt || 0;
@@ -181,7 +216,39 @@ const sum = (a, b) => a + b;
 
 
   },[])
+
+
+  // const da = {
+  //   labels: ['00:00', '00:01', '00:02', '00:03', '00:04', '00:05'],
+  //   datasets: [
+  //     {
+  //       label: 'Time per Minute',
+  //       data: [10, 12, 14, 8, 18, 16], // Replace with your data
+  //       borderColor: 'blue',
+  //       backgroundColor: 'rgba(0, 0, 255, 0.2)',
+  //     },
+  //   ],
+  // };
+
+  // // Chart options
+  // const options = {
+  //   scales: {
+  //     x: [
+  //       {
+  //         type: 'time',
+  //         time: {
+  //           unit: 'minute', // Display time per minute
+  //           unitStepSize: 1, // Step size in minutes
+  //           displayFormats: {
+  //             minute: 'HH:mm', // Display format for minutes
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   },
+  // };
   
+ 
 
   return (
     <>
@@ -255,12 +322,11 @@ const sum = (a, b) => a + b;
               ]}
             />
           </Grid>
-          <Grid item xs={12} md={6} lg={8}>
-            <AppWebsiteVisits
-              title="Website Visits"
-              subheader="(+43%) than last year"
-              chartLabels={[
-                '01/01/2003',
+          {/* <div className="time-graph">
+      <Line data={da} options={options} />
+    </div> */}
+
+                {/* '01/01/2003',
                 '02/01/2003',
                 '03/01/2003',
                 '04/01/2003',
@@ -270,7 +336,38 @@ const sum = (a, b) => a + b;
                 '08/01/2003',
                 '09/01/2003',
                 '10/01/2003',
-                '11/01/2003',
+                '11/01/2003', */}
+          <Grid item xs={12} md={6} lg={8}>
+            <AppWebsiteVisits
+              title="Website Visits"
+              subheader="(+43%) than last year"
+              chartLabels={[
+              
+                '01:00',
+                '02:00',
+                '03:00',
+                "04:00",
+                "05:00",
+                "06:00",
+                "07:00",
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00",
+                "20:00",
+                "21:00",
+                "22:00",
+                "23:00",
+                "24:00",
+               
               ]}
               chartData={[
                 {
